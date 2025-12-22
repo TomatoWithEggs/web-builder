@@ -1,26 +1,15 @@
 <script setup lang="ts">
 import initFormComponents from '@/core/form'
-import { onMounted, reactive, ref } from 'vue'
+import { reactive, ref } from 'vue'
 import { v4 as uuidv4 } from 'uuid'
 import draggable from 'vuedraggable'
 import { componentRegistry } from '@/core/form/ComponentRegistry.ts'
 import type { FormComponentDefinition } from '@/core/form/types.ts'
-// 测试
-import InputMenuRender from '@/core/form/form-component/el-input/MenuRender.vue'
-import InputSettingRender from '@/core/form/form-component/el-input/SettingRender.vue'
-import InputFormRender from '@/core/form/form-component/el-input/FormRender.vue'
-import SelectMenuRender from '@/core/form/form-component/el-select/MenuRender.vue'
-import SelectSettingRender from '@/core/form/form-component/el-select/SettingRender.vue'
-import SelectFormRender from '@/core/form/form-component/el-select/FormRender.vue'
-import DateMenuRender from '@/core/form/form-component/el-date-picker/MenuRender.vue'
-import DateSettingRender from '@/core/form/form-component/el-date-picker/SettingRender.vue'
-import DateFormRender from '@/core/form/form-component/el-date-picker/FormRender.vue'
-import ColorMenuRender from '@/core/form/form-component/el-color-picker/MenuRender.vue'
-import ColorSettingRender from '@/core/form/form-component/el-color-picker/SettingRender.vue'
-import ColorFormRender from '@/core/form/form-component/el-color-picker/FormRender.vue'
+import ImportFormConfig from '@/view/form/components/ImportFormConfig.vue'
 
 initFormComponents()
 const componentsList = componentRegistry.getComponents()
+const isShowImportVisible = ref(false)
 
 // 选择字段
 const currentSelectedFormItem = ref<FormComponentDefinition>(null)
@@ -29,76 +18,7 @@ const handleOpenSetting = (item: FormComponentDefinition) => {
   currentSelectedFormItem.value = item
 }
 
-const formItemList = reactive<FormComponentDefinition[]>([
-  {
-    type: 'el-input',
-    title: '输入框',
-    configComponent: InputFormRender,
-    settingComponent: InputSettingRender,
-    menuComponent: InputMenuRender,
-    attributes: {
-      label: '输入框',
-      placeholder: '请输入内容',
-      clearable: true,
-      disabled: false,
-      required: false,
-      rules: [],
-    },
-    config: {},
-    id: 'b8d1fcce-b25e-422b-a1f3-1e4a24dbc295',
-  },
-  {
-    type: 'el-select',
-    title: '选择框',
-    configComponent: SelectFormRender,
-    settingComponent: SelectSettingRender,
-    menuComponent: SelectMenuRender,
-    attributes: {
-      label: '选择框',
-      placeholder: '请选择',
-      clearable: false,
-      disabled: false,
-      required: false,
-      rules: [],
-    },
-    config: {
-      label: '下拉选择',
-      databaseField: '',
-      optionSource: 'static',
-      options: [
-        { label: '选项1', value: '1' },
-        { label: '选项2', value: '2' },
-      ],
-    },
-    id: '35421032-81ad-4417-bdeb-cdcec7b5542b',
-  },
-  {
-    type: 'el-date-picker',
-    title: '时间选择',
-    configComponent: DateFormRender,
-    settingComponent: DateSettingRender,
-    menuComponent: DateMenuRender,
-    attributes: { placeholder: '时间选择', disabled: false, clearable: false },
-    config: { label: '时间选择', databaseField: '' },
-    id: '783aad12-6d90-4c35-9532-ff1b2bbc37d7',
-  },
-  {
-    type: 'el-color-picker',
-    title: '颜色选择',
-    configComponent: ColorFormRender,
-    settingComponent: ColorSettingRender,
-    menuComponent: ColorMenuRender,
-    attributes: {
-      disabled: false,
-      predefine: []
-    },
-    config: {
-        label: '颜色选择',
-        databaseField: ''
-    },
-    id: '783aad12-6d90-4c35-9532-ff1b2bbc37d8',
-  },
-])
+const formItemList = reactive<FormComponentDefinition[]>([])
 // 表单配置增加一个组件之后的回调事件
 const onItemAdd = (item: { newIndex: number }) => {
   const newIndex = item.newIndex
@@ -126,10 +46,33 @@ const handleConfigUpdate = (updateData: FormComponentDefinition) => {
 
   Object.assign(formItem, updateData)
 }
+// 导入配置json
+const importFormConfig = (config: FormComponentDefinition[]) => {
+  const componentsMap = new Map<string, FormComponentDefinition>()
+  Object.values(componentsList).forEach((item)=>{
+    componentsMap.set(item.type, item)
+  })
+  formItemList.length = 0
+  config.forEach((item) => {
+    const component = componentsMap.get(item.type)
+    if(component != undefined){
+      item['configComponent'] = component.configComponent
+      item['settingComponent'] = component.settingComponent
+      item['menuComponent'] = component.menuComponent
+      if(!('id' in  item)){
+        item['id'] = uuidv4()
+      }
+      formItemList.push(item)
+    }else{
+      console.warn(`未找到组件：${item.type}`)
+    }
+  })
+  if(formItemList.length>0 && typeof formItemList[0] === 'object'){
+    handleOpenSetting(formItemList[0])
+  }
 
-onMounted(() => {
-  handleOpenSetting(formItemList[3])
-})
+  isShowImportVisible.value = false
+}
 </script>
 
 <template>
@@ -153,6 +96,10 @@ onMounted(() => {
     </div>
     <!-- 中间画布 -->
     <div class="content">
+      <div class="toolbar">
+        <el-button type="primary" @click="isShowImportVisible=true">导入配置</el-button>
+        <el-button type="primary">代码生成</el-button>
+      </div>
       <el-form class="form-canvas" label-width="80px">
         <draggable
           :list="formItemList"
@@ -187,6 +134,7 @@ onMounted(() => {
         ></component>
       </template>
     </div>
+    <ImportFormConfig v-model="isShowImportVisible" @importConfig="importFormConfig"></ImportFormConfig>
   </div>
 </template>
 

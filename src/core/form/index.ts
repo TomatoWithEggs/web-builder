@@ -3,7 +3,7 @@ import type { FormComponentDefinition } from '@/core/form/types.ts'
 
 export default function initFormComponents() {
   // 动态导入 form-component 里面的所有文件夹
-  const formDefinitions = import.meta.glob('./form-component/**/FormComponentDefinition.ts', { eager: true });
+  const formDefinitions = import.meta.glob('@/core/form/form-component/**/FormComponentDefinition.ts', { eager: true });
 
   // 遍历所有导入的定义文件
   Object.values(formDefinitions).forEach((item: unknown) => {

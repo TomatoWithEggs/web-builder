@@ -96,4 +96,9 @@ export interface FormComponentDefinition {
    * 可选：组件图标（可以是组件或字符串）
    */
   icon?: string | Component
+
+  /**
+   * 可选
+   */
+  id?: string
 }
