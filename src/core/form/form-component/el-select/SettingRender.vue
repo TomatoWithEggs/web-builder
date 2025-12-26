@@ -50,8 +50,8 @@ const updateConfig = () => {
 // 监听 props.widget 的变化来初始化表单
 watch(() => props.element, (newWidget) => {
   if (newWidget) {
-    Object.assign(attributesTemp, newWidget.attributes)
-    Object.assign(configTemp, newWidget.config)
+    Object.assign(attributesTemp.value, newWidget.attributes)
+    Object.assign(configTemp.value, newWidget.config)
     updateConfig()
   }
 }, { immediate: true, deep: true })

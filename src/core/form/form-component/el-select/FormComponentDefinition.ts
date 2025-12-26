@@ -1,16 +1,9 @@
-import type {
-  CodeGeneratorContext,
-  CodeGeneratorResult,
-  FormComponentDefinition
-} from '@/core/form/types.ts'
+import type { FormComponentDefinition } from '@/core/form/types.ts'
 import MenuRender from '@/core/form/form-component/el-select/MenuRender.vue'
 import SettingRender from '@/core/form/form-component/el-select/SettingRender.vue'
 import FormRender from '@/core/form/form-component/el-select/FormRender.vue'
 
 export const Definition: FormComponentDefinition = {
-  codeGenerator(context: CodeGeneratorContext): CodeGeneratorResult {
-    return undefined
-  },
   type: 'el-select',
   title: '选择框',
   configComponent: FormRender,
@@ -24,5 +17,5 @@ export const Definition: FormComponentDefinition = {
     required: false,
     rules: [],
   },
-  config: {}
- }
+  config: {},
+}

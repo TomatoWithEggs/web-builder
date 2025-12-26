@@ -42,8 +42,8 @@ watch(
   () => props.element,
   (newWidget) => {
     if (newWidget) {
-      Object.assign(attributesTemp, newWidget.attributes)
-      Object.assign(configTemp, newWidget.config)
+      Object.assign(attributesTemp.value, newWidget.attributes)
+      Object.assign(configTemp.value, newWidget.config)
       updateConfig()
     }
   },

@@ -1,51 +1,6 @@
 import { Component } from 'vue'
 
 /**
- * 代码生成上下文
- */
-export interface CodeGeneratorContext {
-  /**
-   * 组件实例属性
-   */
-  attributes: Record<string, any>
-  /**
-   * 组件配置
-   */
-  config: {
-    label: string
-    [key: string]: any
-  }
-  /**
-   * 表单模型绑定的变量名，例如 'form.field_123'
-   */
-  modelName: string
-  /**
-   * 字段名/键名，例如 'field_123'
-   */
-  fieldName: string
-}
-
-/**
- * 代码生成结果
- */
-export interface CodeGeneratorResult {
-  /**
-   * 模板代码片段
-   */
-  template: string
-  /**
-   * 脚本代码片段（可选）
-   * 例如：const options_123 = [...]
-   */
-  script?: string
-  /**
-   * 需要导入的依赖（可选）
-   * 例如：import { ElInput } from 'element-plus'
-   */
-  imports?: string[]
-}
-
-/**
  * 表单组件定义接口
  * 所有的表单组件都必须遵循这个接口
  */
